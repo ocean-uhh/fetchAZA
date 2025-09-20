@@ -195,9 +195,30 @@ def plot_histograms(ds, STN):
     """
     Plot histograms of all data variables in the dataset.
 
-    Parameters:
-    ds (xarray.Dataset): The dataset containing variables to plot.
-    time_var (str): The name of the time variable in the dataset.
+    This function creates a grid of histograms showing the distribution of values
+    for each data variable in the dataset. The histograms are arranged in a grid
+    with up to 4 columns, and unused subplot positions are removed.
+
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        The dataset containing variables to plot. All data variables in the dataset
+        will have histograms created.
+    STN : str
+        Station identifier that will be displayed in the top right corner of the figure.
+
+    Returns
+    -------
+    None
+        The function displays the plot but does not return any values.
+
+    Notes
+    -----
+    - NaN values are automatically excluded from the histograms.
+    - Each histogram uses 30 bins by default.
+    - The grid layout uses up to 4 columns with the number of rows calculated
+      based on the number of variables.
+    - Unused subplot axes are removed for cleaner visualization.
     """
     num_vars = len(ds.data_vars)
     ncols = 4
@@ -229,18 +250,41 @@ def plot_histograms(ds, STN):
 
 def plot_temperature_variables(ds_pressure, keys, STN, fig=None, axs=None):
     """
-    Plot temperature variables from ds_pressure against RECORD_TIME.
+    Plot temperature variables from a dataset against time.
 
-    Parameters:
-    ds_pressure (xarray.Dataset): The dataset containing temperature variables.
-    keys (str or list): A single key (str) or a list of keys (list of str) to match variable names.
-    STN (str): Station identifier for annotation.
-    fig (matplotlib.figure.Figure, optional): Existing figure to plot into. If None, a new figure is created.
-    axs (numpy.ndarray or matplotlib.axes._axes.Axes, optional): Existing axes to plot into. If None, new axes are created.
+    This function creates time series plots of temperature variables, automatically
+    determining the appropriate time coordinate and creating subplots for each
+    specified variable key.
 
-    Returns:
-    fig (matplotlib.figure.Figure): The figure object containing the plots.
-    axs (numpy.ndarray or list): The array or list of axes objects corresponding to the subplots.
+    Parameters
+    ----------
+    ds_pressure : xarray.Dataset
+        The dataset containing temperature variables. Should have a time coordinate
+        such as 'RECORD_TIME' or 'TIME'.
+    keys : str or list of str
+        A single key (str) or a list of keys to match variable names for plotting.
+        Each key will generate a separate subplot.
+    STN : str
+        Station identifier for annotation on the plots.
+    fig : matplotlib.figure.Figure, optional
+        Existing figure to plot into. If None, a new figure is created.
+        Default is None.
+    axs : numpy.ndarray or matplotlib.axes._axes.Axes, optional
+        Existing axes to plot into. If None, new axes are created.
+        Default is None.
+
+    Returns
+    -------
+    fig : matplotlib.figure.Figure
+        The figure object containing the plots.
+    axs : numpy.ndarray or list
+        The array or list of axes objects corresponding to the subplots.
+
+    Notes
+    -----
+    - The function prioritizes 'TIME' over 'RECORD_TIME' as the time coordinate.
+    - If neither is found, it uses the first coordinate in the dataset.
+    - Each key gets its own subplot with shared x-axis for time comparison.
     """
     time_var = (
         "RECORD_TIME"
@@ -306,6 +350,43 @@ def plot_temperature_variables(ds_pressure, keys, STN, fig=None, axs=None):
 
 
 def plot_temperatures(ds, fig=None, ax=None, ylim=None):
+    """
+    Plot transfer and ambient temperature time series from a dataset.
+
+    This function creates a time series plot showing both transfer temperature and
+    ambient temperature variables from the dataset. The y-axis limits are automatically
+    calculated based on the data range (mean ± 2 standard deviations) unless specified.
+
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        The dataset containing temperature variables. Must have 'TRANSFER_TEMPERATURE',
+        'AMBIENT_TEMPERATURE', and 'SAMPLE_TIME' variables, and a 'Station' attribute.
+    fig : matplotlib.figure.Figure, optional
+        Existing figure to plot into. If None, a new figure is created.
+        Default is None.
+    ax : matplotlib.axes._axes.Axes, optional
+        Existing axes to plot into. If None, new axes are created.
+        Default is None.
+    ylim : tuple of float, optional
+        Y-axis limits as (lower_limit, upper_limit). If None, limits are automatically
+        calculated from the data. Default is None.
+
+    Returns
+    -------
+    fig : matplotlib.figure.Figure
+        The figure object containing the plot.
+    ax : matplotlib.axes._axes.Axes
+        The axes object containing the plot.
+
+    Notes
+    -----
+    - The function expects specific variable names: 'TRANSFER_TEMPERATURE',
+      'AMBIENT_TEMPERATURE', and 'SAMPLE_TIME'.
+    - Y-axis limits are auto-calculated as mean ± 2 standard deviations if not provided.
+    - Station information is displayed in the bottom right corner of the plot.
+    - X-axis labels are rotated 45 degrees for better readability.
+    """
     if fig is None or ax is None:
         fig, ax = plt.subplots(figsize=(10, 6))
 
@@ -1057,6 +1138,42 @@ def plot_age_values(ds_AZA, fig_path, time_var="SAMPLE_TIME", fig=None, ax=None)
 
 
 def plot_pressure_sequence(ds, key1, STN):
+    """
+    Plot pressure data for different sequence numbers with comparisons and differences.
+
+    This function creates a three-panel plot showing pressure data for different
+    sequence numbers. It compares AZA (sequences 2 and 4) with AZS (sequences 1 and 5)
+    data and displays the differences between paired sequences.
+
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        The dataset containing pressure data with 'SEQUENCE_NUM' and 'SAMPLE_TIME'
+        coordinates, and the specified pressure variable.
+    key1 : str
+        The name of the pressure variable to plot (e.g., 'AMBIENT_PRESSURE').
+        Must be present in the dataset with 'units', 'standard_name', and
+        'long_name' attributes.
+    STN : str
+        Station identifier for annotation (currently unused in the function).
+
+    Returns
+    -------
+    fig : matplotlib.figure.Figure
+        The figure object containing all three subplots.
+    axs : numpy.ndarray
+        Array of three axes objects corresponding to the subplots.
+
+    Notes
+    -----
+    - The function filters data for sequence numbers 1, 2, 4, and 5.
+    - Left panel: Comparison of sequences 1 (AZS) and 2 (AZA).
+    - Middle panel: Comparison of sequences 4 (AZA) and 5 (AZS).
+    - Right panel: Differences between paired sequences (2-1 and 5-4).
+    - AZA sequences are shown in blue solid lines, AZS in red dashed lines.
+    - The function expects the variable to have 'units', 'standard_name',
+      and 'long_name' attributes.
+    """
     # Filter the dataset for SEQUENCE_NUM 1, 2, 3, 4, and 5
     ds_seq1 = ds.where(ds["SEQUENCE_NUM"].isin([1]), drop=True)
     ds_seq2 = ds.where(ds["SEQUENCE_NUM"].isin([2]), drop=True)
