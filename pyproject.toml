@@ -26,9 +26,9 @@ dynamic = [
   "dependencies",
   "version",
 ]
-urls.documentation = "https://github.com/eleanorfrajka/fetchAZA"
-urls.homepage = "https://github.com/eleanorfrajka/fetchAZA"
-urls.repository = "https://github.com/eleanorfrajka/fetchAZA"
+urls.documentation = "https://github.com/ocean-uhh/fetchAZA"
+urls.homepage = "https://github.com/ocean-uhh/fetchAZA"
+urls.repository = "https://github.com/ocean-uhh/fetchAZA"
 
 [tool.setuptools]
 packages = ["fetchAZA"]

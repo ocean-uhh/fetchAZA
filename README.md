@@ -17,20 +17,20 @@ python -m pip install fetchAZA
 
 ## Documentation
 
-For documentation, see http://eleanorfrajka.github.io/fetchAZA.
+For documentation, see http://ocean-uhh.github.io/fetchAZA.
 
 Check out the demo notebook `notebooks/demo.ipynb` for example functionality.
 
-As input, fetchAZA takes Sonardyne Fetch AZA `*.csv` files.  See [8318-FS Issue06.pdf](https://github.com/eleanorfrajka/fetchAZA/blob/main/docs/source/_static/8318-FS%20Issue06.pdf) for details of the data format, or check out the snippet in `data/sample_data.csv`.
+As input, fetchAZA takes Sonardyne Fetch AZA `*.csv` files.  See [8318-FS Issue06.pdf](https://github.com/ocean-uhh/fetchAZA/blob/main/docs/source/_static/8318-FS%20Issue06.pdf) for details of the data format, or check out the snippet in `data/sample_data.csv`.
 
 ## Contributing
 
-Contributions welcome!  
+Contributions welcome!
 
 To install a local, development version of fetchAZA, clone the repo, open a terminal in the root directory (next to this README.md file) and run these commands:
 
 ```
-git clone https://github.com/eleanorfrajka/fetchAZA.git
+git clone https://github.com/ocean-uhh/fetchAZA.git
 cd fetchAZA
 pip install -r requirements-dev.txt
 pip install -e .
