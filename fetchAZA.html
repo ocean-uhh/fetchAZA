@@ -60,7 +60,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Help and reference</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference external" href="http://github.com/eleanorfrajka/fetchAZA">GitHub Repo</a></li>
+<li class="toctree-l1"><a class="reference external" href="http://github.com/ocean-uhh/fetchAZA">GitHub Repo</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#"><code class="xref py py-mod docutils literal notranslate"><span class="pre">fetchAZA</span> <span class="pre">API</span></code></a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#module-fetchAZA.convertAZA">convertAZA</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#fetchAZA.convertAZA.convertAZA"><code class="docutils literal notranslate"><span class="pre">convertAZA()</span></code></a></li>
@@ -839,9 +839,32 @@ STN=’Station123’</p>
 <dt class="sig sig-object py" id="fetchAZA.plotters.plot_histograms">
 <span class="sig-prename descclassname"><span class="pre">fetchAZA.plotters.</span></span><span class="sig-name descname"><span class="pre">plot_histograms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">STN</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/plotters.html#plot_histograms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.plotters.plot_histograms" title="Link to this definition"></a></dt>
 <dd><p>Plot histograms of all data variables in the dataset.</p>
-<p>Parameters:
-ds (xarray.Dataset): The dataset containing variables to plot.
-time_var (str): The name of the time variable in the dataset.</p>
+<p>This function creates a grid of histograms showing the distribution of values
+for each data variable in the dataset. The histograms are arranged in a grid
+with up to 4 columns, and unused subplot positions are removed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds</strong> (<em>xarray.Dataset</em>) – The dataset containing variables to plot. All data variables in the dataset
+will have histograms created.</p></li>
+<li><p><strong>STN</strong> (<em>str</em>) – Station identifier that will be displayed in the top right corner of the figure.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The function displays the plot but does not return any values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>NaN values are automatically excluded from the histograms.</p></li>
+<li><p>Each histogram uses 30 bins by default.</p></li>
+<li><p>The grid layout uses up to 4 columns with the number of rows calculated
+based on the number of variables.</p></li>
+<li><p>Unused subplot axes are removed for cleaner visualization.</p></li>
+</ul>
 </dd></dl>
 
 <dl class="py function">
@@ -890,27 +913,115 @@ for proper labeling.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="fetchAZA.plotters.plot_pressure_sequence">
 <span class="sig-prename descclassname"><span class="pre">fetchAZA.plotters.</span></span><span class="sig-name descname"><span class="pre">plot_pressure_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">STN</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/plotters.html#plot_pressure_sequence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.plotters.plot_pressure_sequence" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Plot pressure data for different sequence numbers with comparisons and differences.</p>
+<p>This function creates a three-panel plot showing pressure data for different
+sequence numbers. It compares AZA (sequences 2 and 4) with AZS (sequences 1 and 5)
+data and displays the differences between paired sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds</strong> (<em>xarray.Dataset</em>) – The dataset containing pressure data with ‘SEQUENCE_NUM’ and ‘SAMPLE_TIME’
+coordinates, and the specified pressure variable.</p></li>
+<li><p><strong>key1</strong> (<em>str</em>) – The name of the pressure variable to plot (e.g., ‘AMBIENT_PRESSURE’).
+Must be present in the dataset with ‘units’, ‘standard_name’, and
+‘long_name’ attributes.</p></li>
+<li><p><strong>STN</strong> (<em>str</em>) – Station identifier for annotation (currently unused in the function).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>fig</strong> (<em>matplotlib.figure.Figure</em>) – The figure object containing all three subplots.</p></li>
+<li><p><strong>axs</strong> (<em>numpy.ndarray</em>) – Array of three axes objects corresponding to the subplots.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The function filters data for sequence numbers 1, 2, 4, and 5.</p></li>
+<li><p>Left panel: Comparison of sequences 1 (AZS) and 2 (AZA).</p></li>
+<li><p>Middle panel: Comparison of sequences 4 (AZA) and 5 (AZS).</p></li>
+<li><p>Right panel: Differences between paired sequences (2-1 and 5-4).</p></li>
+<li><p>AZA sequences are shown in blue solid lines, AZS in red dashed lines.</p></li>
+<li><p>The function expects the variable to have ‘units’, ‘standard_name’,
+and ‘long_name’ attributes.</p></li>
+</ul>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="fetchAZA.plotters.plot_temperature_variables">
 <span class="sig-prename descclassname"><span class="pre">fetchAZA.plotters.</span></span><span class="sig-name descname"><span class="pre">plot_temperature_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds_pressure</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">STN</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/plotters.html#plot_temperature_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.plotters.plot_temperature_variables" title="Link to this definition"></a></dt>
-<dd><p>Plot temperature variables from ds_pressure against RECORD_TIME.</p>
-<p>Parameters:
-ds_pressure (xarray.Dataset): The dataset containing temperature variables.
-keys (str or list): A single key (str) or a list of keys (list of str) to match variable names.
-STN (str): Station identifier for annotation.
-fig (matplotlib.figure.Figure, optional): Existing figure to plot into. If None, a new figure is created.
-axs (numpy.ndarray or matplotlib.axes._axes.Axes, optional): Existing axes to plot into. If None, new axes are created.</p>
-<p>Returns:
-fig (matplotlib.figure.Figure): The figure object containing the plots.
-axs (numpy.ndarray or list): The array or list of axes objects corresponding to the subplots.</p>
+<dd><p>Plot temperature variables from a dataset against time.</p>
+<p>This function creates time series plots of temperature variables, automatically
+determining the appropriate time coordinate and creating subplots for each
+specified variable key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds_pressure</strong> (<em>xarray.Dataset</em>) – The dataset containing temperature variables. Should have a time coordinate
+such as ‘RECORD_TIME’ or ‘TIME’.</p></li>
+<li><p><strong>keys</strong> (<em>str</em><em> or </em><em>list</em><em> of </em><em>str</em>) – A single key (str) or a list of keys to match variable names for plotting.
+Each key will generate a separate subplot.</p></li>
+<li><p><strong>STN</strong> (<em>str</em>) – Station identifier for annotation on the plots.</p></li>
+<li><p><strong>fig</strong> (<em>matplotlib.figure.Figure</em><em>, </em><em>optional</em>) – Existing figure to plot into. If None, a new figure is created.
+Default is None.</p></li>
+<li><p><strong>axs</strong> (<em>numpy.ndarray</em><em> or </em><em>matplotlib.axes._axes.Axes</em><em>, </em><em>optional</em>) – Existing axes to plot into. If None, new axes are created.
+Default is None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>fig</strong> (<em>matplotlib.figure.Figure</em>) – The figure object containing the plots.</p></li>
+<li><p><strong>axs</strong> (<em>numpy.ndarray or list</em>) – The array or list of axes objects corresponding to the subplots.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The function prioritizes ‘TIME’ over ‘RECORD_TIME’ as the time coordinate.</p></li>
+<li><p>If neither is found, it uses the first coordinate in the dataset.</p></li>
+<li><p>Each key gets its own subplot with shared x-axis for time comparison.</p></li>
+</ul>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="fetchAZA.plotters.plot_temperatures">
 <span class="sig-prename descclassname"><span class="pre">fetchAZA.plotters.</span></span><span class="sig-name descname"><span class="pre">plot_temperatures</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ds</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/fetchAZA/plotters.html#plot_temperatures"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#fetchAZA.plotters.plot_temperatures" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Plot transfer and ambient temperature time series from a dataset.</p>
+<p>This function creates a time series plot showing both transfer temperature and
+ambient temperature variables from the dataset. The y-axis limits are automatically
+calculated based on the data range (mean ± 2 standard deviations) unless specified.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds</strong> (<em>xarray.Dataset</em>) – The dataset containing temperature variables. Must have ‘TRANSFER_TEMPERATURE’,
+‘AMBIENT_TEMPERATURE’, and ‘SAMPLE_TIME’ variables, and a ‘Station’ attribute.</p></li>
+<li><p><strong>fig</strong> (<em>matplotlib.figure.Figure</em><em>, </em><em>optional</em>) – Existing figure to plot into. If None, a new figure is created.
+Default is None.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes._axes.Axes</em><em>, </em><em>optional</em>) – Existing axes to plot into. If None, new axes are created.
+Default is None.</p></li>
+<li><p><strong>ylim</strong> (<em>tuple</em><em> of </em><em>float</em><em>, </em><em>optional</em>) – Y-axis limits as (lower_limit, upper_limit). If None, limits are automatically
+calculated from the data. Default is None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>fig</strong> (<em>matplotlib.figure.Figure</em>) – The figure object containing the plot.</p></li>
+<li><p><strong>ax</strong> (<em>matplotlib.axes._axes.Axes</em>) – The axes object containing the plot.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The function expects specific variable names: ‘TRANSFER_TEMPERATURE’,
+‘AMBIENT_TEMPERATURE’, and ‘SAMPLE_TIME’.</p></li>
+<li><p>Y-axis limits are auto-calculated as mean ± 2 standard deviations if not provided.</p></li>
+<li><p>Station information is displayed in the bottom right corner of the plot.</p></li>
+<li><p>X-axis labels are rotated 45 degrees for better readability.</p></li>
+</ul>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="fetchAZA.plotters.show_attributes">
