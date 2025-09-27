@@ -195,6 +195,14 @@ def process_datasets(
 
     # Load netCDF interim files
     datasets = readers.load_netcdf_datasets(data_path, file_root, keys)
+    _log.info(f"Loaded {len(datasets)} datasets: {list(datasets.keys())}")
+    for key, ds in datasets.items():
+        record_time_len = len(ds.get("RECORD_TIME", [])) if "RECORD_TIME" in ds else 0
+        _log.info(
+            f"Dataset {key}: {len(ds.variables)} variables, RECORD_TIME length: {record_time_len}"
+        )
+        if record_time_len == 0:
+            _log.warning(f"Dataset {key} has no RECORD_TIME data!")
 
     # Change units to preferred
     for key in datasets:
@@ -203,12 +211,44 @@ def process_datasets(
         ds = timetools.convert_seconds_to_float(ds)
 
     # Assign sampling time for AZA sequence
-    datasets["AZAseq"] = timetools.assign_sample_time(
-        datasets["AZAseq"], pattern=datasets["AZAseq"].attrs["pattern"], adjust_time=15
-    )
+    if "AZAseq" in datasets:
+        _log.info(
+            f"AZAseq dataset found with {len(datasets['AZAseq']['RECORD_TIME'])} records"
+        )
+        _log.info(
+            f"AZAseq pattern: {datasets['AZAseq'].attrs.get('pattern', 'No pattern attribute')}"
+        )
+        datasets["AZAseq"] = timetools.assign_sample_time(
+            datasets["AZAseq"],
+            pattern=datasets["AZAseq"].attrs["pattern"],
+            adjust_time=15,
+        )
+        _log.info(
+            f"AZAseq after time assignment: {len(datasets['AZAseq']['RECORD_TIME'])} records"
+        )
+    else:
+        _log.warning("No AZAseq dataset found in loaded datasets")
 
     # Cut dataset to deployment period
     datasets = timetools.cut_to_deployment(datasets, deploy_date, recovery_date)
+    _log.info("After cutting to deployment period:")
+    for key, ds in datasets.items():
+        record_time_len = len(ds.get("RECORD_TIME", [])) if "RECORD_TIME" in ds else 0
+        _log.info(f"Dataset {key}: RECORD_TIME length: {record_time_len}")
+        if record_time_len == 0:
+            _log.warning(
+                f"Dataset {key} has no data after deployment period filtering!"
+            )
+        if key == "AZAseq":
+            _log.info(f"AZAseq after deployment filtering: {record_time_len} records")
+            if record_time_len > 0:
+                _log.info(
+                    f"AZAseq time range: {ds['RECORD_TIME'].min().values} to {ds['RECORD_TIME'].max().values}"
+                )
+            else:
+                _log.warning(
+                    "AZAseq dataset is empty after deployment period filtering!"
+                )
 
     # Assign attributes to dataset variables using readers.vocab_attrs
     for key in datasets:
@@ -234,6 +274,15 @@ def process_datasets(
 
     time_var = "RECORD_TIME"
     keys_to_combine = ["KLR", "INC", "DQZ", "TMP", "PIES"]
+
+    # Filter keys_to_combine to only include datasets that actually exist
+    available_keys = [key for key in keys_to_combine if key in datasets]
+    if len(available_keys) < len(keys_to_combine):
+        missing_keys = [key for key in keys_to_combine if key not in datasets]
+        _log.warning(
+            f"Some expected datasets are missing: {missing_keys}. Proceeding with available datasets: {available_keys}"
+        )
+        keys_to_combine = available_keys
 
     vars_to_rename = {
         "KLR": {
@@ -293,7 +342,18 @@ def process_datasets(
             print(f"Dataset {key} not included in combined datasets")
 
     # Combine datasets into one
+    _log.info(
+        f"Combining {len(combined_datasets)} datasets: {list(combined_datasets.keys())}"
+    )
+    for key, ds in combined_datasets.items():
+        _log.info(
+            f"Dataset {key}: {len(ds.variables)} variables, RECORD_TIME length: {len(ds.get('RECORD_TIME', []))}"
+        )
+
     combined_dataset = xr.merge(combined_datasets.values(), compat="override")
+    _log.info(
+        f"Combined dataset: {len(combined_dataset.variables)} variables, RECORD_TIME length: {len(combined_dataset.get('RECORD_TIME', []))}"
+    )
     # Assign attributes to combined_dataset from all_attributes
     for key, attrs in all_attributes.items():
         for attr_name, attr_value in attrs.items():
@@ -310,6 +370,13 @@ def process_datasets(
         if any(attr_name == skip for skip in attr_skip):
             del combined_dataset.attrs[attr_name]
     _, med_sr = timetools.calculate_sample_rate(combined_dataset)
+
+    # Check if combined_dataset has any data
+    if len(combined_dataset["RECORD_TIME"]) == 0:
+        _log.error("Combined dataset is empty - no RECORD_TIME data found")
+        raise ValueError(
+            "Combined dataset is empty. No data was loaded from the intermediate netCDF files. Check that the CSV file contains valid data for the specified keys."
+        )
 
     # Create an evenly spaced time grid based on combined_dataset['RECORD_TIME']
     time_start = combined_dataset["RECORD_TIME"].min().values
@@ -363,7 +430,13 @@ def process_datasets(
             ds_AZA.attrs[new_name] = ds_AZA.attrs.pop(old_name)
     if "SERIAL_NUMBER" in ds_AZA.variables:
         snvalue = ds_AZA["SERIAL_NUMBER"].mean().item()
-        ds_AZA.attrs["Serial_Number_Low"] = int(snvalue)
+        if np.isnan(snvalue):
+            _log.warning(
+                "SERIAL_NUMBER contains NaN values, setting Serial_Number_Low to 0"
+            )
+            ds_AZA.attrs["Serial_Number_Low"] = 0
+        else:
+            ds_AZA.attrs["Serial_Number_Low"] = int(snvalue)
         ds_AZA = ds_AZA.drop_vars("SERIAL_NUMBER")
 
     ds_AZA = utilities.set_best_dtype(ds_AZA)

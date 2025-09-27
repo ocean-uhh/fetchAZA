@@ -18,6 +18,7 @@ def convertAZA(
     water_depth="0",
     keys=["DQZ", "PIES", "INC", "TMP", "KLR"],
     cleanup=True,
+    overwrite=None,
 ):
     """
     Processes and converts AZA data from CSV to netCDF format.
@@ -40,6 +41,13 @@ def convertAZA(
         Longitude of the station.
     water_depth : float
         Water depth at the station.
+    keys : list of str
+        Keys for intermediate files to process.
+    cleanup : bool
+        Whether to delete intermediate files after processing.
+    overwrite : bool, optional
+        If True, overwrite existing files. If False, skip existing files.
+        If None, prompt the user for input.
 
     Returns
     -------
@@ -72,7 +80,7 @@ def convertAZA(
     # Convert the data
     datasets = readers.read_csv_to_xarray(file_path)
     # Save intermediate files
-    writers.save_datasets(datasets, file_path)
+    writers.save_datasets(datasets, file_path, overwrite=overwrite)
     # Process the data
     ds_pressure, ds_AZA = tools.process_datasets(
         data_path, file_root, deploy_date, recovery_date
@@ -105,12 +113,12 @@ def convertAZA(
     output_file = os.path.join(
         data_path, f"{STN}_{deploy_date.replace('-','').replace('/','')}_use.nc"
     )
-    writers.save_dataset(ds_pressure, output_file)
+    writers.save_dataset(ds_pressure, output_file, overwrite=overwrite)
 
     output_file = os.path.join(
-        data_path, f"{STN}_{deploy_date.replace('-','').replace('/','')}_AZA.nc"
+        data_path, f"{STN}_{deploy_date.replace('-','').replace('/','')}_AZAseq.nc"
     )
-    writers.save_dataset(ds_AZA, output_file)
+    writers.save_dataset(ds_AZA, output_file, overwrite=overwrite)
 
     if cleanup:
         # Delete the intermediate files

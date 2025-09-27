@@ -56,7 +56,7 @@ def delete_netcdf_datasets(
     return deleted_count
 
 
-def save_dataset(ds, output_file="../data/test.nc"):
+def save_dataset(ds, output_file="../data/test.nc", overwrite=None):
     """
     Attempts to save the dataset to a NetCDF file. If a TypeError occurs due to invalid attribute values,
     it converts the invalid attributes to strings and retries the save operation.
@@ -65,6 +65,8 @@ def save_dataset(ds, output_file="../data/test.nc"):
     ----------
     ds (xarray.Dataset): The dataset to be saved.
     output_file (str): The path to the output NetCDF file. Defaults to 'test.nc'.
+    overwrite (bool, optional): If True, overwrite existing files. If False, skip existing files.
+                              If None, prompt the user for input.
 
     Returns
     -------
@@ -74,6 +76,27 @@ def save_dataset(ds, output_file="../data/test.nc"):
     ----
     Based on: https://github.com/pydata/xarray/issues/3743
     """
+    # Check if file exists and handle accordingly
+    if os.path.exists(output_file):
+        if overwrite is None:
+            response = (
+                input(f"File {output_file} already exists. Overwrite? (y/n): ")
+                .lower()
+                .strip()
+            )
+            overwrite = response in ("y", "yes")
+
+        if overwrite:
+            try:
+                os.remove(output_file)
+                _log.info(f"Deleted existing file: {output_file}")
+            except Exception as e:
+                _log.error(f"Failed to delete existing file {output_file}: {e}")
+                return False
+        else:
+            _log.info(f"Skipping save - file already exists: {output_file}")
+            return False
+
     valid_types = (str, int, float, np.float32, np.float64, np.int32, np.int64)
     # More general
     valid_types = (str, Number, np.ndarray, np.number, list, tuple)
@@ -99,6 +122,7 @@ def save_dataset(ds, output_file="../data/test.nc"):
 
     try:
         ds.to_netcdf(output_file)
+        _log.info(f"Successfully saved dataset to: {output_file}")
         return True
     except TypeError as e:
         print(e.__class__.__name__, e)
@@ -111,6 +135,7 @@ def save_dataset(ds, output_file="../data/test.nc"):
                     variable.attrs[k] = str(v)
         try:
             ds.to_netcdf(output_file)  # , format='NETCDF4_CLASSIC'
+            _log.info(f"Successfully saved dataset to: {output_file}")
             return True
         except Exception as e:
             _log.error("Failed to save dataset:", e)
@@ -125,7 +150,7 @@ def save_dataset(ds, output_file="../data/test.nc"):
             return False
 
 
-def save_datasets(data_sets_new, input_fn):
+def save_datasets(data_sets_new, input_fn, overwrite=None):
     """
     Save multiple datasets to NetCDF files with filenames derived from the input filename.
 
@@ -135,6 +160,9 @@ def save_datasets(data_sets_new, input_fn):
         A dictionary where keys are dataset identifiers (e.g., strings) and values are the corresponding datasets to be saved.
     input_fn : str
         The input filename used as a base to generate output filenames.
+    overwrite : bool, optional
+        If True, overwrite existing files. If False, skip existing files.
+        If None, prompt the user for input.
 
     Notes
     -----
@@ -151,6 +179,6 @@ def save_datasets(data_sets_new, input_fn):
         _log.info(f"------------ Saving dataset for key: {key} ------------")
         output_file = os.path.splitext(input_fn)[0] + f"_{key}.nc"
 
-        if not save_dataset(ds, output_file):
+        if not save_dataset(ds, output_file, overwrite=overwrite):
             _log.error(f"Failed to save dataset for key: {key}")
             print(f"Failed to save dataset for key: {key}")
