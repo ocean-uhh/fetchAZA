@@ -1,5 +1,10 @@
 fetchAZA/_version.py
 setup.sh
+# Exclude all netCDF files in data/ directory
+data/*.nc
+# But include specific sample files needed for testing
+!data/sample_data_AZAseq.nc
+!data/sample_data_DQZ.nc
 
 # VSCode settings
 .vscode/*

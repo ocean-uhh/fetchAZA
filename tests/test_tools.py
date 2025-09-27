@@ -1,11 +1,16 @@
 import pathlib
 import sys
+import tempfile
+import shutil
+from unittest.mock import patch, MagicMock
+import pytest
 
 script_dir = pathlib.Path(__file__).parent.absolute()
 parent_dir = script_dir.parents[0]
 sys.path.append(str(parent_dir))
 
 import numpy as np
+import pandas as pd
 import xarray as xr
 from fetchAZA import tools
 
@@ -36,3 +41,7 @@ def test_reformat_units_var():
         ds = xr.Dataset({"x": ("t", [1])})
         ds["x"].attrs["units"] = original_unit
         assert tools.reformat_units_var(ds, "x") == expected_format
+
+
+# Additional tests for enhanced functionality could be added here
+# Currently focusing on core unit conversions and formatting

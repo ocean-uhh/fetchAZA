@@ -80,6 +80,7 @@ def convertAZA(
     # Convert the data
     datasets = readers.read_csv_to_xarray(file_path)
     # Save intermediate files
+    _log.debug(f"Saving intermediate files with overwrite={overwrite}")
     writers.save_datasets(datasets, file_path, overwrite=overwrite)
     # Process the data
     ds_pressure, ds_AZA = tools.process_datasets(
@@ -113,11 +114,13 @@ def convertAZA(
     output_file = os.path.join(
         data_path, f"{STN}_{deploy_date.replace('-','').replace('/','')}_use.nc"
     )
+    _log.debug(f"Saving pressure dataset with overwrite={overwrite}")
     writers.save_dataset(ds_pressure, output_file, overwrite=overwrite)
 
     output_file = os.path.join(
         data_path, f"{STN}_{deploy_date.replace('-','').replace('/','')}_AZAseq.nc"
     )
+    _log.debug(f"Saving AZA dataset with overwrite={overwrite}")
     writers.save_dataset(ds_AZA, output_file, overwrite=overwrite)
 
     if cleanup:
