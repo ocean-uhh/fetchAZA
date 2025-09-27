@@ -172,6 +172,11 @@
 <span class="sd">    ----</span>
 <span class="sd">    Based on: https://github.com/pydata/xarray/issues/3743</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Debug logging for troubleshooting overwrite issues</span>
+    <span class="n">_log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;save_dataset called with overwrite=</span><span class="si">{</span><span class="n">overwrite</span><span class="si">}</span><span class="s2"> for file: </span><span class="si">{</span><span class="n">output_file</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+
     <span class="c1"># Check if file exists and handle accordingly</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">output_file</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">overwrite</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
