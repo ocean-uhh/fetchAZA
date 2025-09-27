@@ -3,7 +3,7 @@ import pathlib
 import sys
 import tempfile
 import shutil
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 import pytest
 
 script_dir = pathlib.Path(__file__).parent.absolute()
@@ -19,7 +19,9 @@ from fetchAZA import writers
 def sample_dataset():
     """Load a real sample dataset from the project's test data."""
     # Use the AZAseq sample file since it's a core sensor (not optional like PIES)
-    sample_file = pathlib.Path(__file__).parent.parent / "data" / "sample_data_AZAseq.nc"
+    sample_file = (
+        pathlib.Path(__file__).parent.parent / "data" / "sample_data_AZAseq.nc"
+    )
     if sample_file.exists():
         return xr.open_dataset(sample_file)
     else:
@@ -45,7 +47,7 @@ def real_sample_datasets():
     """Load real sample datasets from the project's data directory."""
     data_dir = pathlib.Path(__file__).parent.parent / "data"
     datasets = {}
-    
+
     # Load existing sample netCDF files for core sensors
     for key in ["DQZ", "AZAseq"]:
         sample_file = data_dir / f"sample_data_{key}.nc"
@@ -54,21 +56,25 @@ def real_sample_datasets():
                 datasets[key] = xr.open_dataset(sample_file)
             except Exception:
                 # If file can't be read, create a minimal placeholder
-                datasets[key] = xr.Dataset({
-                    "RECORD_TIME": (["time"], np.arange(5)),
-                    "PRESSURE": (["time"], np.random.rand(5) + 1000)
-                })
+                datasets[key] = xr.Dataset(
+                    {
+                        "RECORD_TIME": (["time"], np.arange(5)),
+                        "PRESSURE": (["time"], np.random.rand(5) + 1000),
+                    }
+                )
         else:
             # Create placeholder if file doesn't exist
-            datasets[key] = xr.Dataset({
-                "RECORD_TIME": (["time"], np.arange(5)),
-                "PRESSURE": (["time"], np.random.rand(5) + 1000)
-            })
-    
+            datasets[key] = xr.Dataset(
+                {
+                    "RECORD_TIME": (["time"], np.arange(5)),
+                    "PRESSURE": (["time"], np.random.rand(5) + 1000),
+                }
+            )
+
     return datasets
 
 
-@pytest.fixture 
+@pytest.fixture
 def sample_csv_path():
     """Get the path to the real sample CSV file."""
     return pathlib.Path(__file__).parent.parent / "data" / "sample_data.csv"

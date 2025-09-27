@@ -1,16 +1,11 @@
 import pathlib
 import sys
-import tempfile
-import shutil
-from unittest.mock import patch, MagicMock
-import pytest
 
 script_dir = pathlib.Path(__file__).parent.absolute()
 parent_dir = script_dir.parents[0]
 sys.path.append(str(parent_dir))
 
 import numpy as np
-import pandas as pd
 import xarray as xr
 from fetchAZA import tools
 

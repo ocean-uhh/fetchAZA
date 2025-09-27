@@ -77,8 +77,10 @@ def save_dataset(ds, output_file="../data/test.nc", overwrite=None):
     Based on: https://github.com/pydata/xarray/issues/3743
     """
     # Debug logging for troubleshooting overwrite issues
-    _log.debug(f"save_dataset called with overwrite={overwrite} for file: {output_file}")
-    
+    _log.debug(
+        f"save_dataset called with overwrite={overwrite} for file: {output_file}"
+    )
+
     # Check if file exists and handle accordingly
     if os.path.exists(output_file):
         if overwrite is None:
