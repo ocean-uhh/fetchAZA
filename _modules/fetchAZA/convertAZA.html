@@ -111,6 +111,7 @@
     <span class="n">water_depth</span><span class="o">=</span><span class="s2">&quot;0&quot;</span><span class="p">,</span>
     <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;DQZ&quot;</span><span class="p">,</span> <span class="s2">&quot;PIES&quot;</span><span class="p">,</span> <span class="s2">&quot;INC&quot;</span><span class="p">,</span> <span class="s2">&quot;TMP&quot;</span><span class="p">,</span> <span class="s2">&quot;KLR&quot;</span><span class="p">],</span>
     <span class="n">cleanup</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">overwrite</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Processes and converts AZA data from CSV to netCDF format.</span>
@@ -133,6 +134,13 @@
 <span class="sd">        Longitude of the station.</span>
 <span class="sd">    water_depth : float</span>
 <span class="sd">        Water depth at the station.</span>
+<span class="sd">    keys : list of str</span>
+<span class="sd">        Keys for intermediate files to process.</span>
+<span class="sd">    cleanup : bool</span>
+<span class="sd">        Whether to delete intermediate files after processing.</span>
+<span class="sd">    overwrite : bool, optional</span>
+<span class="sd">        If True, overwrite existing files. If False, skip existing files.</span>
+<span class="sd">        If None, prompt the user for input.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -165,7 +173,7 @@
     <span class="c1"># Convert the data</span>
     <span class="n">datasets</span> <span class="o">=</span> <span class="n">readers</span><span class="o">.</span><span class="n">read_csv_to_xarray</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
     <span class="c1"># Save intermediate files</span>
-    <span class="n">writers</span><span class="o">.</span><span class="n">save_datasets</span><span class="p">(</span><span class="n">datasets</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
+    <span class="n">writers</span><span class="o">.</span><span class="n">save_datasets</span><span class="p">(</span><span class="n">datasets</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
     <span class="c1"># Process the data</span>
     <span class="n">ds_pressure</span><span class="p">,</span> <span class="n">ds_AZA</span> <span class="o">=</span> <span class="n">tools</span><span class="o">.</span><span class="n">process_datasets</span><span class="p">(</span>
         <span class="n">data_path</span><span class="p">,</span> <span class="n">file_root</span><span class="p">,</span> <span class="n">deploy_date</span><span class="p">,</span> <span class="n">recovery_date</span>
@@ -198,12 +206,12 @@
     <span class="n">output_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
         <span class="n">data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">STN</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">deploy_date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">_use.nc&quot;</span>
     <span class="p">)</span>
-    <span class="n">writers</span><span class="o">.</span><span class="n">save_dataset</span><span class="p">(</span><span class="n">ds_pressure</span><span class="p">,</span> <span class="n">output_file</span><span class="p">)</span>
+    <span class="n">writers</span><span class="o">.</span><span class="n">save_dataset</span><span class="p">(</span><span class="n">ds_pressure</span><span class="p">,</span> <span class="n">output_file</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
 
     <span class="n">output_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-        <span class="n">data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">STN</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">deploy_date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">_AZA.nc&quot;</span>
+        <span class="n">data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">STN</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">deploy_date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">_AZAseq.nc&quot;</span>
     <span class="p">)</span>
-    <span class="n">writers</span><span class="o">.</span><span class="n">save_dataset</span><span class="p">(</span><span class="n">ds_AZA</span><span class="p">,</span> <span class="n">output_file</span><span class="p">)</span>
+    <span class="n">writers</span><span class="o">.</span><span class="n">save_dataset</span><span class="p">(</span><span class="n">ds_AZA</span><span class="p">,</span> <span class="n">output_file</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">cleanup</span><span class="p">:</span>
         <span class="c1"># Delete the intermediate files</span>
