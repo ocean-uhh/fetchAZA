@@ -23,7 +23,7 @@ jobs:
 
     # Using channel conda-forge helps deal with pandoc installation issues
     - name: Setup Micromamba
-      uses: mamba-org/setup-micromamba@v2.0.1
+      uses: mamba-org/setup-micromamba@v3.0.0
       with:
         environment-name: TEST
         init-shell: bash
