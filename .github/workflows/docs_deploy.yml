@@ -22,7 +22,7 @@ jobs:
         fetch-depth: 0
 
     # Using channel conda-forge helps deal with pandoc installation issues
-    - name: Setup Micromamba ${{ matrix.python-version }}
+    - name: Setup Micromamba
       uses: mamba-org/setup-micromamba@v2.0.1
       with:
         environment-name: TEST
@@ -47,7 +47,7 @@ jobs:
         jupyter nbconvert --to notebook --execute notebooks/demo.ipynb --output=demo-output.ipynb --ExecutePreprocessor.allow_errors=False
         mv notebooks/*output.ipynb docs/source/
         pushd docs
-        make clean html
+        make clean && make html
         popd
 
     - name: Deploy
