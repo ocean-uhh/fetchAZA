@@ -47,7 +47,7 @@ jobs:
         jupyter nbconvert --to notebook --execute notebooks/demo.ipynb --output=demo-output.ipynb --ExecutePreprocessor.allow_errors=False
         mv notebooks/*output.ipynb docs/source/
         pushd docs
-        make clean html
+        make clean && make html
         popd
 
     - name: Deploy

@@ -40,8 +40,10 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install flake8 pytest
         if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+    - name: Install AZApressure
+      run: |
+        python -m pip install -e . --no-deps --force-reinstall
     - name: Test with pytest
       run: |
         pytest
@@ -55,10 +57,6 @@ jobs:
 #        create-args: >-
 #          python=${{ matrix.python-version }} --file requirements-dev.txt --channel conda-forge
 
-    - name: Install AZApressure
-      run: |
-        python -m pip install -e . --no-deps --force-reinstall
-
 #    - name: Full Tests
 #      run: |
-#        python -m pytest --cov=seagliderOG1 --cov-report term-missing  tests/
+#        python -m pytest --cov=fetchAZA --cov-report term-missing  tests/
