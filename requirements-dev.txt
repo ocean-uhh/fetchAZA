@@ -1,34 +1,34 @@
 # Core scientific stack
-numpy>=1.23
+numpy>=2.2.6
 pandas>=2.3.3
 xarray>=2025.6.1
 scipy>=1.15.3
 netcdf4>=1.7.4
 
 # Plotting
-matplotlib>=3.7
+matplotlib>=3.10.9
 
 # Progress bar (optional)
 #tqdm>=4.66  # optional, confirm usage
 
 # Jupyter and notebooks
-jupyterlab>=4.0
+jupyterlab>=4.6.1
 nbconvert>=7.17.1
-myst-nb>=1.0
+myst-nb>=1.4.0
 nbsphinx>=0.9.8  # optional, confirm usage
 
 # Documentation
 sphinx>=7.2
-sphinx-rtd-theme>=2.0
-pypandoc>=1.11  # optional, confirm usage
+sphinx-rtd-theme>=3.1.0
+pypandoc>=1.17  # optional, confirm usage
 myst-parser>=4.0.1
 
 # Testing
-pytest>=8.0
-pytest-cov>=4.1  # optional, if you use coverage
+pytest>=9.1.1
+pytest-cov>=7.1.0  # optional, if you use coverage
 
 # Code quality
-black>=24.0
+black>=26.5.1
 ruff>=0.15.20
 pre-commit>=3.5
 codespell
