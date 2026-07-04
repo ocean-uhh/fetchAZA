@@ -14,7 +14,7 @@ matplotlib>=3.7
 # Jupyter and notebooks
 jupyterlab>=4.0
 nbconvert>=7.8
-myst-nb>=1.0
+myst-nb>=1.4.0
 nbsphinx>=0.9  # optional, confirm usage
 
 # Documentation
