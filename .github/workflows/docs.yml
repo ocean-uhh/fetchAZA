@@ -18,7 +18,6 @@ jobs:
     steps:
     - name: Run a one-line script
       run: echo "The job was automatically triggered by a ${{ github.event_name }} event."
-
     - name: checkout
       uses: actions/checkout@v7
       with:

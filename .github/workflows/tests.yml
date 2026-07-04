@@ -7,6 +7,15 @@ on:
     paths:
       - '**.py'
       - '**.ipynb'
+      - '**.rst'
+      - '**.md'
+      - '**/*.py'
+      - '**/*.ipynb'
+      - '**/*.rst'
+      - '**/*.md'
+      - 'requirements*.txt'
+      - 'pyproject.toml'
+      - 'setup.cfg'
 
 jobs:
   job_mytests:
