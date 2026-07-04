@@ -12,7 +12,7 @@ matplotlib>=3.7
 #tqdm>=4.66  # optional, confirm usage
 
 # Jupyter and notebooks
-jupyterlab>=4.0
+jupyterlab>=4.6.1
 nbconvert>=7.8
 myst-nb>=1.0
 nbsphinx>=0.9  # optional, confirm usage
