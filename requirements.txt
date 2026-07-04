@@ -1,8 +1,8 @@
-numpy>=1.23
+numpy>=2.2.6
 pandas>=2.3.3
 xarray>=2025.6.1
 netcdf4>=1.7.4
 scipy>=1.15.3
 
 # Plotting
-matplotlib>=3.7
+matplotlib>=3.10.9
